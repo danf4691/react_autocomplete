@@ -15,38 +15,41 @@ function getSuggestions(people: Person[], query: string) {
     );
   }
 
-  return preparedSuggestions || people;
+  return preparedSuggestions !== undefined ? preparedSuggestions : people;
 }
 
-export const App: React.FC = () => {
+type AppProps = {
+  debounceDelay?: number;
+};
+
+export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = React.useState('');
   const [isInputFocused, setIsInputFocused] = React.useState(false);
   const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(
     null,
   );
 
+  const trimmedQuery = query.trim();
   const suggestions =
-    query.trim() || isInputFocused
+    trimmedQuery !== '' || (isInputFocused && query === '')
       ? getSuggestions(peopleFromServer, query)
       : [];
 
   const handleSelectPerson = (person: Person) => {
     setSelectedPerson(person);
-    setQuery('');
+    setQuery(person.name);
   };
 
   const applyQueryDebounce = useCallback(
     debounce((value: string) => {
       setQuery(value);
       setSelectedPerson(null);
-    }, 300),
-    [],
+    }, debounceDelay),
+    [debounceDelay],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQueryDebounce(event.target.value);
-    setSelectedPerson(null);
-    applyQueryDebounce.flush();
   };
 
   const handleInputFocus = () => {
