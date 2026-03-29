@@ -38,6 +38,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const handleSelectPerson = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
+    setIsInputFocused(false);
   };
 
   const applyQueryDebounce = useCallback(
@@ -70,7 +71,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
             : `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
         </h1>
 
-        <div className="dropdown is-active">
+        <div className={`dropdown${isInputFocused ? ' is-active' : ''}`}>
           <div className="dropdown-trigger">
             <input
               value={query}
