@@ -150,7 +150,9 @@ describe('Page', () => {
         .should('contain', page.getPageTitle(person));
 
       page.searchInput()
-        .type('{backspace}');
+        .type(' ');
+
+      page.waitForDebounce();
 
       page.title()
         .should('contain', 'No selected person');
