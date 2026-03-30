@@ -7,11 +7,11 @@ import debounce from 'lodash.debounce';
 
 function getSuggestions(people: Person[], query: string) {
   let preparedSuggestions;
-  const trimmedQuery = query.toLowerCase();
+  const normalizedQuery = query.trim().toLowerCase();
 
-  if (trimmedQuery) {
+  if (normalizedQuery) {
     preparedSuggestions = people.filter(person =>
-      person.name.toLowerCase().startsWith(trimmedQuery),
+      person.name.toLowerCase().startsWith(normalizedQuery),
     );
   }
 
@@ -29,16 +29,14 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
     null,
   );
 
-  const trimmedQuery = query.trim();
   const suggestions =
-    trimmedQuery !== '' || (isInputFocused && query === '')
+    query.trim() || isInputFocused
       ? getSuggestions(peopleFromServer, query)
       : [];
 
   const handleSelectPerson = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
-    setIsInputFocused(false);
   };
 
   const applyQueryDebounce = useCallback(
@@ -51,6 +49,8 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     applyQueryDebounce(event.target.value);
+    // setSelectedPerson(null);
+    applyQueryDebounce.flush();
   };
 
   const handleInputFocus = () => {
@@ -59,7 +59,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
 
   const handleInputBlur = () => {
     setIsInputFocused(false);
-    applyQueryDebounce.flush();
+    // applyQueryDebounce.flush();
   };
 
   return (
@@ -71,7 +71,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
             : `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`}
         </h1>
 
-        <div className={`dropdown${isInputFocused ? ' is-active' : ''}`}>
+        <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
               value={query}
