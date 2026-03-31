@@ -24,6 +24,7 @@ type AppProps = {
 
 export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const [query, setQuery] = React.useState('');
+  const [inputValue, setInputValue] = React.useState('');
   const [isInputFocused, setIsInputFocused] = React.useState(false);
   const [selectedPerson, setSelectedPerson] = React.useState<Person | null>(
     null,
@@ -37,6 +38,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   const handleSelectPerson = (person: Person) => {
     setSelectedPerson(person);
     setQuery(person.name);
+    setInputValue(person.name);
   };
 
   const applyQueryDebounce = useCallback(
@@ -48,9 +50,10 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    applyQueryDebounce(event.target.value);
-    // setSelectedPerson(null);
-    applyQueryDebounce.flush();
+    const value = event.target.value;
+
+    setInputValue(value);
+    applyQueryDebounce(value);
   };
 
   const handleInputFocus = () => {
@@ -59,7 +62,6 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
 
   const handleInputBlur = () => {
     setIsInputFocused(false);
-    // applyQueryDebounce.flush();
   };
 
   return (
@@ -74,7 +76,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
         <div className="dropdown is-active">
           <div className="dropdown-trigger">
             <input
-              value={query}
+              value={inputValue}
               onChange={handleQueryChange}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}

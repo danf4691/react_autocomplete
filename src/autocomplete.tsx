@@ -26,7 +26,7 @@ export const Autocomplete: React.FC<Props> = ({
           className="dropdown-item"
           data-cy="suggestion-item"
           key={person.slug}
-          onClick={() => onSelect(person)}
+          onMouseDown={() => onSelect(person)}
         >
           <p
             className={person.sex === 'm' ? 'has-text-link' : 'has-text-danger'}
